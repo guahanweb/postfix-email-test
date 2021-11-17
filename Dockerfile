@@ -14,6 +14,10 @@ COPY run.sh /
 COPY app /app
 RUN chown -R appuser:appgroup /app
 
+WORKDIR /app
+RUN npm install
+WORKDIR /
+
 RUN chmod +x /run.sh
 RUN newaliases
 

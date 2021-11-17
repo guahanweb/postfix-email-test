@@ -17,6 +17,7 @@ function add_config_value() {
 # [ -z "${SMTP_SERVER}" ] && echo "SMTP_SERVER is not set" && exit 1
 [ -z "${SERVER_HOSTNAME}" ] && echo "SERVER_HOSTNAME is not set" && exit 1
 
+CALLBACK_URL="${CALLBACK_URL:-'http://localhost:3000'}"
 SMTP_PORT="${SMTP_PORT:-587}"
 DOMAIN=`echo ${SERVER_HOSTNAME} | awk 'BEGIN{FS=OFS="."}{print $(NF-1),$NF}'`
 
@@ -35,7 +36,7 @@ add_config_value "mynetworks" "${nets}"
 # Register the email_route transport
 echo -e "email_route   unix  -       n       n       -       1000       pipe\n" >> /etc/postfix/master.cf
 echo -e "  flags=Rq user=appuser null_sender=\n" >> /etc/postfix/master.cf
-echo -e "  argv=/usr/local/bin/node /app/router.js \${sender} \${recipient}\n" >> /etc/postfix/master.cf
+echo -e "  argv=/usr/local/bin/node /app/router.js $CALLBACK_URL \${sender} \${recipient}\n" >> /etc/postfix/master.cf
 
 # Create the actual transport
 echo -e "*      email_route:" > /etc/postfix/transport
