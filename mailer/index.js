@@ -35,11 +35,11 @@ function execTest() {
 
     const messageId = v4();
     transport.sendMail({
-        from: "garth@guahanweb.com",
-        to: "test@example.com",
-        subject: "Message title",
-        text: "Plaintext version",
-        html: "<p>HTML version</p>",
+        from: "fizzbuzz@mydomain.com",
+        to: "foobar@example.com",
+        subject: "This is my subject",
+        text: "Here is the content!",
+        html: "<p>Here is the HTML version of the content!</p>",
         headers: {
             "x-message-id": messageId,
             "x-message-callback": `http://${config.host}:${config.port}`
