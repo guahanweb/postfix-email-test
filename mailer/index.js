@@ -26,8 +26,8 @@ function main() {
 
 function execTest() {
     const transport = nodemailer.createTransport({
-        port: 1337,
-        host: 'localhost',
+        port: config.postfixPort,
+        host: config.postfixHost,
         tls: {
             rejectUnauthorized: false
         }
