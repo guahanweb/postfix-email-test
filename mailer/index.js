@@ -1,3 +1,4 @@
+const config = require("./config");
 const nodemailer = require("nodemailer");
 const v4 = require("uuid").v4;
 const express = require("express");
@@ -5,14 +6,13 @@ const express = require("express");
 main();
 
 function main() {
-    const port = 3000;
     const app = express();
     app.use(express.json());
 
     app.post('/:messageId', handler);
 
-    const server = app.listen(port, () => {
-        console.log(`App listening at http://localhost:${port}`);
+    const server = app.listen(config.port, () => {
+        console.log(`App listening at http://${config.host}:${config.port}`);
         execTest();
     });
 
@@ -42,6 +42,7 @@ function execTest() {
         html: "<p>HTML version</p>",
         headers: {
             "x-message-id": messageId,
+            "x-message-callback": `http://${config.host}:${config.port}`
         },
     }, function (err) {
         if (err) {

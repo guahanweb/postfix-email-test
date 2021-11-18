@@ -6,7 +6,7 @@ const logger = require('./lib/logger').getLogger({
   dir: config.LOG_PATH
 });
 
-const [,, callbackUrl, emailFrom, emailTo] = process.argv;
+const [,, emailFrom, emailTo] = process.argv;
 const params = {
     to: emailTo,
     from: emailFrom,
@@ -20,12 +20,20 @@ const rl = readline.createInterface({
     terminal: false,
 });
 
+let callbackUrl = null;
 rl.on("line", function (line) {
-    const match = line.match(/^x-message-id\:\s+(.+)$/i);
-    if (!!match) {
+    const idMatch = line.match(/^x-message-id\:\s+(.+)$/i);
+    if (!!idMatch) {
         // we found the message id
-        params.id = match[1];
+        params.id = idMatch[1];
     }
+
+    const urlMatch = line.match(/^x-message-callback\:\s+(.+)$/i);
+    if (!!urlMatch) {
+        // we found the callback url
+        callbackUrl = urlMatch[1];
+    }
+
     params.raw += `${line}\n`;
 });
 
@@ -33,6 +41,12 @@ rl.on("close", function () {
     // post the body to our test endpoint
     if (params.id === null) {
         logger.warn("no x-message-id header found!");
+        process.exit(1);
+    }
+
+    // be sure we know where to phone home
+    if (callbackUrl === null) {
+        logger.warn("no x-message-callback header found!");
         process.exit(1);
     }
 

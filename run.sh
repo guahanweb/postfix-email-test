@@ -36,7 +36,7 @@ add_config_value "mynetworks" "${nets}"
 # Register the email_route transport
 echo -e "email_route   unix  -       n       n       -       1000       pipe\n" >> /etc/postfix/master.cf
 echo -e "  flags=Rq user=appuser null_sender=\n" >> /etc/postfix/master.cf
-echo -e "  argv=/usr/local/bin/node /app/router.js $CALLBACK_URL \${sender} \${recipient}\n" >> /etc/postfix/master.cf
+echo -e "  argv=/usr/local/bin/node /app/router.js \${sender} \${recipient}\n" >> /etc/postfix/master.cf
 
 # Create the actual transport
 echo -e "*      email_route:" > /etc/postfix/transport

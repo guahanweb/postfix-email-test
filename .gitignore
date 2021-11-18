@@ -1,3 +1,2 @@
 .env
-app/node_modules
-mailer/node_modules
+**/node_modules
