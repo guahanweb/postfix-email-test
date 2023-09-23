@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+export DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" > /dev/null 2>&1 && pwd )"
+export PROJECT_ROOT="${DIR}"
+
+# load additional files, if available
+[[ -f ~/.bashrc ]] && source ~/.bashrc
+[[ -f ${DIR}/scripts/settings.sh ]] && source ${DIR}/scripts/settings.sh
+[[ -f ${DIR}/scripts/utils.sh ]] && source ${DIR}/scripts/utils.sh
+
+if [ "$#" -gt 0 ]
+then
+    CMD=${1}
+    shift
+
+    case "${CMD}" in
+        build )
+            # build the docker image
+            docker build -t ${DOCKER_TAG} ${DIR} > /dev/null 2>&1
+            [ $? == 0 ] || fail "failed to build image: ${BOLD_WHITE}${DOCKER_TAG} from ${DIR}${NC}"
+            ok "successfully built docker image: ${BOLD_WHITE}${DOCKER_TAG}${NC}"
+            ;;
+
+        run-tests )
+            # execute the tests
+            run_tests
+            ;;
+
+        * )
+            # unknown command
+            ;;
+    esac
+else
+    # default behavior, since no command provided
+    warn "no command provided"
+fi

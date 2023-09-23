@@ -21,5 +21,8 @@ WORKDIR /
 RUN chmod +x /run.sh
 RUN newaliases
 
+HEALTHCHECK --interval=10s --timeout=5s --retries=3 \
+  CMD netstat -l | grep smtp
+
 EXPOSE 25
 CMD ["/run.sh"]
