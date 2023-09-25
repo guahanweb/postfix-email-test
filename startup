@@ -23,7 +23,7 @@ then
             ;;
 
         stop-postfix )
-            if [ $( docker ps -f "name=${DOCKER_TAG}" | grep "${DOCKER_TAG}" | wc -l ) -gt 0 ]
+            if [ $( docker ps -f "name=${CONTAINER_NAME}" | grep "${DOCKER_TAG}" | wc -l ) -gt 0 ]
             then
                 # container is running, so stop it
                 stop_postfix
