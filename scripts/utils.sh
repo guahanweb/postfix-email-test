@@ -2,17 +2,41 @@
 
 source ${DIR}/scripts/colors.sh
 
-function run_tests() {
-    start_time=$(gdate +%s.%3N)
+function build_image() {
+    # build the docker image
+    docker build -t ${DOCKER_TAG} ${DIR} > /dev/null 2>&1
+    [ $? == 0 ] || fail "failed to build image: ${BOLD_WHITE}${DOCKER_TAG}${NC} from ${CYAN}${DIR}${NC}"
+    ok "successfully built docker image: ${BOLD_WHITE}${DOCKER_TAG}${NC}"
+}
 
-    # start up the docker image
-    docker run -d --name "${CONTAINER_NAME}" \
+function require_image() {
+    if [[ -z "$(docker images -q ${DOCKER_TAG})" ]]
+    then
+        info "image ${BOLD_WHITE}${DOCKER_TAG}${NC} does not exist, building..."
+        build_image
+    fi
+}
+
+function start_postfix() {
+    docker run --rm -d --name "${CONTAINER_NAME}" \
         -e "SERVER_HOSTNAME=${SERVER_HOSTNAME}" \
         -p 1337:25 \
         -t ${DOCKER_TAG} \
         > /dev/null 2>&1
 
-    ok "POSTFIX container is running."
+    ok "POSTFIX container started."
+}
+
+function stop_postfix() {
+    docker stop ${CONTAINER_NAME} > /dev/null 2>&1
+    ok "POSTFIX container stopped."
+}
+
+function run_tests() {
+    start_time=$(gdate +%s.%3N)
+
+    # start up the docker image
+    start_postfix
 
     # wait for the container to be healthy
     echo -n "${CYAN}[info]${NC} monitoring for readiness."
@@ -27,8 +51,7 @@ function run_tests() {
     HOST="host.docker.internal" PORT=5000 node mailer
 
     # all done, so clean up
-    docker stop ${CONTAINER_NAME} > /dev/null 2>&1
-    docker rm ${CONTAINER_NAME} > /dev/null 2>&1
+    stop_postfix
 
     end_time=$(gdate +%s.%3N)
     elapsed=$(echo "scale=3; $end_time - $start_time" | bc)
