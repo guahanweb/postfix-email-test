@@ -59,7 +59,7 @@ rl.on("close", function () {
 function handleCallback(params) {
     return new Promise((resolve, reject) => {
         const url = `${callbackUrl}/${params.id}`;
-        console.log("sending to:", url);
+        logger.log(`sending to: ${url}`);
 
         axios.post(url, params)
             .then(resolve)

@@ -21,6 +21,7 @@ function start_postfix() {
     docker run --rm -d --name "${CONTAINER_NAME}" \
         -e "SERVER_HOSTNAME=${SERVER_HOSTNAME}" \
         -p 1337:25 \
+        -v ${PROJECT_ROOT}/app/logs:/app/logs \
         -t ${DOCKER_TAG} \
         > /dev/null 2>&1
 
@@ -48,7 +49,7 @@ function run_tests() {
     echo $'\r'
 
     ok "POSTFIX container is healthy, running the tests."
-    HOST="host.docker.internal" PORT=5000 node mailer
+    HOST="${TEST_HOST}" PORT=${TEST_PORT} node mailer
 
     # all done, so clean up
     stop_postfix
